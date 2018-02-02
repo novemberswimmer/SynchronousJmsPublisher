@@ -1,5 +1,6 @@
 package com.ruel;
 
+import org.apache.activemq.command.ActiveMQQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +22,11 @@ public class JmsMessageProducer {
     protected static final String MESSAGE_COUNT = "messageCount";
 
     @Autowired
+    private ActiveMQQueue destination;
+
+    @Autowired
     private JmsTemplate myJmsTemplate = null;
-    private int messageCount = 1;
+    private int messageCount = 11;
 
     /**
      * Generates JMS messages
@@ -36,14 +40,27 @@ public class JmsMessageProducer {
             myJmsTemplate.send(new MessageCreator() {
                 public Message createMessage(Session session) throws JMSException {
                     TextMessage message = session.createTextMessage(text);
-                    message.setIntProperty(MESSAGE_COUNT, index);
-
-                    logger.info("Sending message: " + text);
+                   // message.setIntProperty(MESSAGE_COUNT, index);
+                    message.setJMSCorrelationID("Ruel-"+ index);
+                    System.out.println("Sending message: " + text + "Correlation="+ message.getJMSCorrelationID());
 
                     return message;
                 }
             });
+
         }
+
+
+        String message = null;
+
+        while (message == null) {
+            message = (String) myJmsTemplate.
+                    receiveSelectedAndConvert(destination, "JMSCorrelationID='Ruel-10'");
+
+            System.out.println(message);
+        }
+
+
     }
 
 }
