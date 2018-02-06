@@ -37,16 +37,18 @@
 
     <bean id="destination"
           class="org.apache.activemq.command.ActiveMQQueue">
-        <constructor-arg value="org.springbyexample.jms.test"/>
+        <constructor-arg value="com.ruel.jms.request"/>
+    </bean>
+
+    <bean id="responseQueue"
+          class="org.apache.activemq.command.ActiveMQQueue">
+        <constructor-arg value="com.ruel.jms.response"/>
     </bean>
 
     <bean id="cachedConnectionFactory"
           class="org.springframework.jms.connection.CachingConnectionFactory"
           p:targetConnectionFactory-ref="jmsFactory"
           p:sessionCacheSize="10"/>
-
-
-
 
 
     <bean id="producerTemplate"
